@@ -7,7 +7,7 @@
 # Perform imports here
 import pandas as pd
 import plotly.offline as pyo
-import plotly.graph_objs as go
+import plotly.figure_factory as ff
 
 # create a DataFrame from the .csv file
 df = pd.read_csv('../data/abalone.csv')
