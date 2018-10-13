@@ -66,22 +66,25 @@ app.layout = html.Div([
 
   # scatterplot
   html.Div([
-    html.Div([
-      dcc.Graph(
-        id='scatterplot'
-      )
-    ], style={'width':'60%', 'display':'inline-block'}),
-
-    # barplot
-    html.Div([
-      dcc.Graph(
-        id='barplot'
-      )
-    ], style={'width':'35%', 'display':'inline-block'})
+    dcc.Graph(
+      id='scatterplot'
+    )
   ]),
 
-  # country info
-  html.Div(id='country_info', children='No country selected'),
+  # markdown with selection stats
+  html.Div([
+    dcc.Markdown(
+      id='selection_info', 
+      children='-',
+      )
+  ]),
+
+  # barplot
+  html.Div([
+    dcc.Graph(
+      id='barplot'
+    )
+  ])
 
 ])
 
@@ -125,17 +128,6 @@ def update_scatterplot(n_clicks, year, xaxis, yaxis):
     )
   }
 
-# Setup country info interaction through callback function
-@app.callback(
-    Output('country_info', 'children'),
-    [Input('scatterplot', 'selectedData')])
-def print_selected_countries(selectedData):
-  if selectedData is not None:
-    countries = [p['text'] for p in selectedData['points']]
-    return ", ".join(str(c) for c in countries)
-  else:
-    return 'Select some countries'
-
 # Setup callback to update the barplot
 @app.callback(
   Output('barplot', 'figure'),
@@ -167,6 +159,35 @@ def update_barplot(selectedData):
 
   else:
     return ''
+
+# Setup country info interaction through callback function
+@app.callback(
+    Output('selection_info', 'children'),
+    [Input('scatterplot', 'selectedData')])
+def print_stats_of_selected_countries(selectedData):
+  if selectedData is not None:
+
+    # get the indexes of the countries to show
+    countries = [c['text'] for c in selectedData['points']]
+
+    # filter the dataframe (only countries to show)
+    df_filtered = df[df['country'].isin(countries)].sort_values(by='gdpPercap', ascending=False)
+
+    # construct items to show in the markdown
+    countries = ", ".join(str(c) for c in df_filtered['country'].unique())
+    avg_gdp = df_filtered['gdpPercap'].mean()
+    avg_life_exp = df_filtered['lifeExp'].mean()
+    avg_pop = df_filtered['pop'].mean()
+
+    return """
+        {}
+        - Avg GDP per Capita  {} 
+        - Avg Life Expectancy {} 
+        - Avg Population      {} 
+        """.format(countries,avg_gdp,avg_life_exp,avg_pop)
+
+  else:
+    return 'Select some countries'
 
 # run the server
 if __name__ == '__main__': 
