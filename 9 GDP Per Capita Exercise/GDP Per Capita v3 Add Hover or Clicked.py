@@ -120,10 +120,10 @@ def update_scatterplot(n_clicks, year, xaxis, yaxis):
 # Setup country info interaction through callback function
 @app.callback(
     Output('country_info', 'children'),
-    [Input('scatterplot', 'hoverData')])
-def print_country_info(hoverData):
-  if hoverData is not None:
-    country_name = hoverData['points'][0]['text']
+    [Input('scatterplot', 'clickData')]) #[Input('scatterplot', 'hoverData')])
+def print_country_info(selectedData):
+  if selectedData is not None:
+    country_name = selectedData['points'][0]['text']
     return country_name
   else:
     return 'Select a country'
