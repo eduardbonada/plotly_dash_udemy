@@ -67,7 +67,7 @@ app.layout = html.Div([
       children = 'Apply',
       style = {'fontSize':18}
     )
-  ], style={ 'display':'inline-block', 'marginLeft':'20px'}),
+  ], style={'display':'inline-block', 'marginLeft':'20px'}),
 
   # line plot to display stock symbols data
   html.Div([
@@ -121,7 +121,26 @@ def update_stock_data(submit_n_clicks, stock_symbols, start_date, end_date):
         stock_symbols_string,
         start_date,
         end_date
-      )
+      ),
+      xaxis=dict(
+        rangeselector=dict(
+          buttons=list([
+            dict(count=1,
+              label='1m',
+              step='month',
+              stepmode='backward'),
+            dict(count=6,
+              label='6m',
+              step='month',
+              stepmode='backward'),
+            dict(step='all')
+          ])
+        ),
+        rangeslider=dict(
+          visible = True
+        ),
+        type='date'
+    )
     )
   }
 
